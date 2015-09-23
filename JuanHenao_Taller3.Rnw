@@ -20,11 +20,12 @@
 
 library(GEOquery)
 library(vsn)
+########################
 gds <- getGEO("GDS3750")
 eset <- GDS2eSet(gds, do.log2 = TRUE)
 eset
 dim(eset)
-
+##########################
 nml <- justvsn(eset)
 @
 
@@ -37,11 +38,11 @@ title(main='Datos normalizados',font=2)
 \textbf{MA PLOT}
 
 <<>>=
-
+###############################
 iref = seq(1, 7, by=2)
 ismp = seq(2, 8, by=2)
-M= exprs(nml)[,ismp]-exprs(nml)[,iref] #log ratios
-A=(exprs(nml)[,ismp]+exprs(nml)[,iref])/2 #promedio
+M= exprs(nml)[,ismp]-exprs(nml)[,iref] 
+A=(exprs(nml)[,ismp]+exprs(nml)[,iref])/2
 dim(M)
 dim(A)
 @
@@ -54,5 +55,51 @@ abline(h=0, col="red")
 @
 
 \subsection*{2. Identifique los genes diferencialmente expresados con pruebas T múltiples (rowttest) y resáltelos en el MAplot}
+
+<<>>=
+
+library(genefilter)
+library("GSEABase")
+library(ALL)
+data(ALL)
+####################################
+bcell=grep("B", as.character(ALL$BT))
+moltyp=which(as.character(ALL$mol.biol) %in% c("NEG", "BCR/ABL"))
+ALL_bcrneg=ALL[,intersect(bcell,moltyp)]
+ALL_bcrneg$mol.biol=factor(ALL_bcrneg$mol.biol)
+class(ALL_bcrneg)
+#####################################
+gsc=GeneSetCollection(ALL_bcrneg, setType=KEGGCollection())
+gsc
+
+Am= incidence(gsc)
+dim(Am)
+######################################
+nsF=ALL_bcrneg[colnames(Am),]
+dim(nsF)
+@
+\textbf{PRUEBA T (rowttest)}
+<<>>=
+rtt=rowttests(nsF, "mol.biol")
+rttStat=rtt$statistic
+dim(rtt)
+names(rtt)
+###################################
+selectedRows=(rowSums(Am)>10)
+Am2=Am[selectedRows,]
+dim(Am)
+dim(Am2)
+dim(rtt)
+###################################
+z=0
+for(i in 1:dim(Am2)[1]){
+z[i]=sum(rttStat[Am2[i,]==1])/sqrt(sum(Am2[i,]))
+}
+length(z)
+#########################################
+resGSEA <- cbind(rownames(Am2),z)
+resGSEAdown <- resGSEA[resGSEA[,2]<(-1.96),]
+resGSEAup <- resGSEA[resGSEA[,2]>1.96,]
+@
 
 \end{document}
