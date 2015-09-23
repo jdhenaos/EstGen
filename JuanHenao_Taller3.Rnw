@@ -1,0 +1,58 @@
+\documentclass{article}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[right=1.5cm,left=1.5cm,top=1.5cm,bottom=1.5cm]{geometry}
+
+\title{Tercer Taller\\ Estadística genómica}
+\author{Juan David Henao Sánchez}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+\section*{Sobre datos del GEO del NCBI de su elección (que comparen dos condiciones biológicas con al menos 5 réplicas) realice los siguientes pasos luego de normalizar:}
+\subsection*{1. Realice un MA-plot}
+
+
+<<>>=
+
+library(GEOquery)
+library(vsn)
+gds <- getGEO("GDS3750")
+eset <- GDS2eSet(gds, do.log2 = TRUE)
+eset
+dim(eset)
+
+nml <- justvsn(eset)
+@
+
+<<fig=TRUE>>=
+
+meanSdPlot(eset)
+title(main='Datos normalizados',font=2)
+@
+
+\textbf{MA PLOT}
+
+<<>>=
+
+iref = seq(1, 7, by=2)
+ismp = seq(2, 8, by=2)
+M= exprs(nml)[,ismp]-exprs(nml)[,iref] #log ratios
+A=(exprs(nml)[,ismp]+exprs(nml)[,iref])/2 #promedio
+dim(M)
+dim(A)
+@
+
+<<fig=TRUE>>=
+
+smoothScatter(rowMeans(A), rowMeans(M), main=" ", xlab="A", ylab="M", pch=20)
+title(main='MA PLOT',font=2)
+abline(h=0, col="red")
+@
+
+\subsection*{2. Identifique los genes diferencialmente expresados con pruebas T múltiples (rowttest) y resáltelos en el MAplot}
+
+\end{document}
