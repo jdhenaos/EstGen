@@ -1,0 +1,105 @@
+\documentclass{article}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[right=1.5cm,left=1.5cm,top=1.5cm,bottom=1.5cm]{geometry}
+
+\title{Tercer Taller\\ Estadística genómica}
+\author{Juan David Henao Sánchez}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+\section*{Sobre datos del GEO del NCBI de su elección (que comparen dos condiciones biológicas con al menos 5 réplicas) realice los siguientes pasos luego de normalizar:}
+\subsection*{1. Realice un MA-plot}
+
+
+<<>>=
+
+library(GEOquery)
+library(vsn)
+########################
+gds <- getGEO("GDS3750")
+eset <- GDS2eSet(gds, do.log2 = TRUE)
+eset
+dim(eset)
+##########################
+nml <- justvsn(eset)
+@
+
+<<fig=TRUE>>=
+
+meanSdPlot(eset)
+title(main='Datos normalizados',font=2)
+@
+
+\textbf{MA PLOT}
+
+<<>>=
+###############################
+iref = seq(1, 7, by=2)
+ismp = seq(2, 8, by=2)
+M= exprs(nml)[,ismp]-exprs(nml)[,iref] 
+A=(exprs(nml)[,ismp]+exprs(nml)[,iref])/2
+dim(M)
+dim(A)
+@
+
+<<fig=TRUE>>=
+
+smoothScatter(rowMeans(A), rowMeans(M), main=" ", xlab="A", ylab="M", pch=20)
+title(main='MA PLOT',font=2)
+abline(h=0, col="red")
+@
+
+\subsection*{2. Identifique los genes diferencialmente expresados con pruebas T múltiples (rowttest) y resáltelos en el MAplot}
+
+<<>>=
+
+library(genefilter)
+library("GSEABase")
+library(ALL)
+data(ALL)
+####################################
+bcell=grep("B", as.character(ALL$BT))
+moltyp=which(as.character(ALL$mol.biol) %in% c("NEG", "BCR/ABL"))
+ALL_bcrneg=ALL[,intersect(bcell,moltyp)]
+ALL_bcrneg$mol.biol=factor(ALL_bcrneg$mol.biol)
+class(ALL_bcrneg)
+#####################################
+gsc=GeneSetCollection(ALL_bcrneg, setType=KEGGCollection())
+gsc
+
+Am= incidence(gsc)
+dim(Am)
+######################################
+nsF=ALL_bcrneg[colnames(Am),]
+dim(nsF)
+@
+\textbf{PRUEBA T (rowttest)}
+<<>>=
+rtt=rowttests(nsF, "mol.biol")
+rttStat=rtt$statistic
+dim(rtt)
+names(rtt)
+###################################
+selectedRows=(rowSums(Am)>10)
+Am2=Am[selectedRows,]
+dim(Am)
+dim(Am2)
+dim(rtt)
+###################################
+z=0
+for(i in 1:dim(Am2)[1]){
+z[i]=sum(rttStat[Am2[i,]==1])/sqrt(sum(Am2[i,]))
+}
+length(z)
+#########################################
+resGSEA <- cbind(rownames(Am2),z)
+resGSEAdown <- resGSEA[resGSEA[,2]<(-1.96),]
+resGSEAup <- resGSEA[resGSEA[,2]>1.96,]
+@
+
+\end{document}
