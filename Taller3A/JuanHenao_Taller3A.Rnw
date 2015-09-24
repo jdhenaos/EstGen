@@ -31,8 +31,44 @@ boxplot(data[, 3:8], main="Boxplot Mus musculus", col="lightgreen", cex.names=0.
 rownames(data) <- data$gene
 countsTable <- data[,3:8]
 head(countsTable)
-conds <- factor( c( "S1", "S2", "S3", "M1","M2","M3"))
-newcds <- newCountDataSet( countsTable, conds )
+conds <- factor( c( "WT", "WT", "WT", "treated","treated","treated"))
+cds <- newCountDataSet( countsTable, conds )
+####################################################
+cds <- estimateSizeFactors( cds )
+sizeFactors(cds)
+head(counts(cds,normalized=TRUE))
+cds <- estimateDispersions( cds )
+#####################################################
+plotDispEsts <- function( cds ){
+  
+  plot(rowMeans( counts( cds, normalized=TRUE ) ), fitInfo(cds)
+       
+       $perGeneDispEsts, pch = '.', log="xy", ylab="dispersion",
+       
+       xlab="mean of normalized counts")
+  
+  xg = 10^seq( -.5, 5, length.out=300 )
+  
+  lines( xg, fitInfo(cds)$dispFun( xg ), col="red" )
+  
+}
+@
+<<fig=TRUE>>=
+
+plotDispEsts(cds)
+@
+<<>>=
+res = nbinomTest(cds,"WT","treated")
+head(res)
+@
+<<fig=TRUE>>=
+plotMA(res)
+hist(res$pval, breaks=100, col="skyblue", border="slateblue", main="")
+@
+<<>>=
+resSig = res[ res$padj < 0.1, ]
+head(resSig)
 @
 
 \end{document}
+
