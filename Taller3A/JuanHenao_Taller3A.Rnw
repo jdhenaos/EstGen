@@ -1,0 +1,34 @@
+\documentclass{article}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[right=1.5cm,left=1.5cm,top=1.5cm,bottom=1.5cm]{geometry}
+
+\title{Taller 3A\\ Estadística genómica}
+\author{Juan David Henao Sánchez}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+\section*{Sobre unos datos del GEO (una sola medición en el tiempo) que comparen dos condiciones, identifique los genes diferencialmente expresados usando acde:
+}
+
+<<>>=
+
+library(acde)
+library("DESeq")
+#########################
+data <- read.table("GSE55477_GeneExpression_RPKMs.txt", h=T)
+dim(data)
+head(data)
+@
+<<fig=TRUE>>=
+boxplot(data[, 4:9], main="Boxplot Fusarium graminearum", col="lightgreen", cex.names=0.2, las=2)
+@
+<<>>=
+rownames(data) <- data$GeneID
+@
+
+\end{document}
