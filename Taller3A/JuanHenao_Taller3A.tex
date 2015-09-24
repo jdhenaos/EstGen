@@ -21,41 +21,56 @@
 > library(acde)
 > library("DESeq")
 > #########################
-> data <- read.table("GSE55477_GeneExpression_RPKMs.txt", h=T)
+> data <- read.table("GSE58972_RELA_6h_processed_data.txt", h=T)
 > dim(data)
 \end{Sinput}
 \begin{Soutput}
-[1] 13321     9
+[1] 23284     8
 \end{Soutput}
 \begin{Sinput}
 > head(data)
 \end{Sinput}
 \begin{Soutput}
-      GeneID Chromosome Gene_length Spores_Rep_1 Spores_Rep_2 Spores_Rep_3
-1 FGSG_11641     Fgchr1         666            0            0            0
-2 FGSG_11605     Fgchr1        1134         0.11            0            0
-3 FGSG_11642     Fgchr1         669         1.68         2.26         3.14
-4 FGSG_11643     Fgchr1         396            0            0            0
-5 FGSG_11600     Fgchr1        1305         0.96         0.62         0.54
-6 FGSG_11601     Fgchr1         423         0.59         0.55         0.28
-  Mycelium_Rep_1 Mycelium_Rep_2 Mycelium_Rep_3
-1              0              0           0.00
-2           0.25              0           0.16
-3           0.64           1.56           3.47
-4              0              0           0.00
-5           0.22           0.11           0.41
-6              0              0           0.00
+           gene description WT_6h_1 WT_6h_2 WT_6h_3 RELA_6h_1 RELA_6h_2
+1 0610005C13Rik          na       9      12      12        11        16
+2 0610007C21Rik          na     534     581     562       512       537
+3 0610007L01Rik          na    2124    2197    2168      2811      2706
+4 0610007N19Rik          na      17      26      21        18        20
+5 0610007P08Rik          na    1410    1504    1543      1546      1577
+6 0610007P14Rik          na    2049    2008    2074      2192      2192
+  RELA_6h_3
+1        10
+2       501
+3      2265
+4        15
+5      1353
+6      1968
 \end{Soutput}
 \end{Schunk}
 \begin{Schunk}
 \begin{Sinput}
-> boxplot(data[, 4:9], main="Boxplot Fusarium graminearum", col="lightgreen", cex.names=0.2, las=2)
+> boxplot(data[, 3:8], main="Boxplot Mus musculus", col="lightgreen", cex.names=0.2, las=2)
 \end{Sinput}
 \end{Schunk}
 \includegraphics{JuanHenao_Taller3A-002}
 \begin{Schunk}
 \begin{Sinput}
-> rownames(data) <- data$GeneID
+> rownames(data) <- data$gene
+> countsTable <- data[,3:8]
+> head(countsTable)
+\end{Sinput}
+\begin{Soutput}
+              WT_6h_1 WT_6h_2 WT_6h_3 RELA_6h_1 RELA_6h_2 RELA_6h_3
+0610005C13Rik       9      12      12        11        16        10
+0610007C21Rik     534     581     562       512       537       501
+0610007L01Rik    2124    2197    2168      2811      2706      2265
+0610007N19Rik      17      26      21        18        20        15
+0610007P08Rik    1410    1504    1543      1546      1577      1353
+0610007P14Rik    2049    2008    2074      2192      2192      1968
+\end{Soutput}
+\begin{Sinput}
+> conds <- factor( c( "S1", "S2", "S3", "M1","M2","M3"))
+> newcds <- newCountDataSet( countsTable, conds )
 \end{Sinput}
 \end{Schunk}
 

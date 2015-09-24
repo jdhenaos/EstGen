@@ -20,15 +20,19 @@
 library(acde)
 library("DESeq")
 #########################
-data <- read.table("GSE55477_GeneExpression_RPKMs.txt", h=T)
+data <- read.table("GSE58972_RELA_6h_processed_data.txt", h=T)
 dim(data)
 head(data)
 @
 <<fig=TRUE>>=
-boxplot(data[, 4:9], main="Boxplot Fusarium graminearum", col="lightgreen", cex.names=0.2, las=2)
+boxplot(data[, 3:8], main="Boxplot Mus musculus", col="lightgreen", cex.names=0.2, las=2)
 @
 <<>>=
-rownames(data) <- data$GeneID
+rownames(data) <- data$gene
+countsTable <- data[,3:8]
+head(countsTable)
+conds <- factor( c( "S1", "S2", "S3", "M1","M2","M3"))
+newcds <- newCountDataSet( countsTable, conds )
 @
 
 \end{document}
