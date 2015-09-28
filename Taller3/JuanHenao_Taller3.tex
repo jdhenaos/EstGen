@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[12pt]{article}
 
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
@@ -16,14 +16,27 @@
 \section*{Sobre datos del GEO del NCBI de su elección (que comparen dos condiciones biológicas con al menos 5 réplicas) realice los siguientes pasos luego de normalizar:}
 \subsection*{1. Realice un MA-plot}
 
-
+\begin{itemize}
+\item{Carga de librerias}
 \begin{Schunk}
 \begin{Sinput}
 > library(GEOquery)
 > library(vsn)
-> ########################
+\end{Sinput}
+\end{Schunk}
+\item{Extrayendo datos}
+\begin{Schunk}
+\begin{Sinput}
 > gds <- getGEO("GDS3750")
 > eset <- GDS2eSet(gds, do.log2 = TRUE)
+> class(eset)
+\end{Sinput}
+\begin{Soutput}
+[1] "ExpressionSet"
+attr(,"package")
+[1] "Biobase"
+\end{Soutput}
+\begin{Sinput}
 > eset
 \end{Sinput}
 \begin{Soutput}
@@ -50,28 +63,40 @@ Annotation:
 Features  Samples 
    22277        8 
 \end{Soutput}
+\end{Schunk}
+\item{Normalización}
+\begin{Schunk}
 \begin{Sinput}
-> ##########################
 > nml <- justvsn(eset)
 \end{Sinput}
 \end{Schunk}
-
+\item{Grafica de datos No normalizados}
 \begin{Schunk}
 \begin{Sinput}
 > meanSdPlot(eset)
+> title(main='Datos No normalizados',font=2)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{JuanHenao_Taller3-004}
+\item{Grafica de datos normalizados}
+\begin{Schunk}
+\begin{Sinput}
+> meanSdPlot(nml)
 > title(main='Datos normalizados',font=2)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{JuanHenao_Taller3-002}
+\includegraphics{JuanHenao_Taller3-005}
+\end{itemize}
 
 \textbf{MA PLOT}
 
+\begin{itemize}
+\item{Calculando variables}
 \begin{Schunk}
 \begin{Sinput}
-> ###############################
 > iref = seq(1, 7, by=2)
 > ismp = seq(2, 8, by=2)
-> M= exprs(nml)[,ismp]-exprs(nml)[,iref] 
+> M= exprs(nml)[,ismp]-exprs(nml)[,iref]
 > A=(exprs(nml)[,ismp]+exprs(nml)[,iref])/2
 > dim(M)
 \end{Sinput}
@@ -85,120 +110,51 @@ Features  Samples
 [1] 22277     4
 \end{Soutput}
 \end{Schunk}
-
+\item{Generando la grafica}
 \begin{Schunk}
 \begin{Sinput}
-> smoothScatter(rowMeans(A), rowMeans(M), main=" ", xlab="A", ylab="M", pch=20)
+> smoothScatter(rowMeans(A), rowMeans(M), main=" ", xlab="A", ylab="M")
 > title(main='MA PLOT',font=2)
 > abline(h=0, col="red")
 \end{Sinput}
 \end{Schunk}
-\includegraphics{JuanHenao_Taller3-004}
+\includegraphics{JuanHenao_Taller3-007}
+\end{itemize}
 
 \subsection*{2. Identifique los genes diferencialmente expresados con pruebas T múltiples (rowttest) y resáltelos en el MAplot}
 
+\begin{itemize}
+\item{Cargando la libreria necesaria}
 \begin{Schunk}
 \begin{Sinput}
 > library(genefilter)
-> library("GSEABase")
-> library(ALL)
-> data(ALL)
-> ####################################
-> bcell=grep("B", as.character(ALL$BT))
-> moltyp=which(as.character(ALL$mol.biol) %in% c("NEG", "BCR/ABL"))
-> ALL_bcrneg=ALL[,intersect(bcell,moltyp)]
-> ALL_bcrneg$mol.biol=factor(ALL_bcrneg$mol.biol)
-> class(ALL_bcrneg)
 \end{Sinput}
-\begin{Soutput}
-[1] "ExpressionSet"
-attr(,"package")
-[1] "Biobase"
-\end{Soutput}
-\begin{Sinput}
-> #####################################
-> gsc=GeneSetCollection(ALL_bcrneg, setType=KEGGCollection())
-> gsc
-\end{Sinput}
-\begin{Soutput}
-GeneSetCollection
-  names: 04610, 00232, ..., 00785 (228 total)
-  unique identifiers: 189_s_at, 31825_at, ..., 41859_at (5333 total)
-  types in collection:
-    geneIdType: AnnotationIdentifier (1 total)
-    collectionType: KEGGCollection (1 total)
-\end{Soutput}
-\begin{Sinput}
-> Am= incidence(gsc)
-> dim(Am)
-\end{Sinput}
-\begin{Soutput}
-[1]  228 5333
-\end{Soutput}
-\begin{Sinput}
-> ######################################
-> nsF=ALL_bcrneg[colnames(Am),]
-> dim(nsF)
-\end{Sinput}
-\begin{Soutput}
-Features  Samples 
-    5333       79 
-\end{Soutput}
 \end{Schunk}
-\textbf{PRUEBA T (rowttest)}
+\item{Eliminando los datos N/A}
 \begin{Schunk}
 \begin{Sinput}
-> rtt=rowttests(nsF, "mol.biol")
-> rttStat=rtt$statistic
-> dim(rtt)
+> Expresados <- exprs(nml)[complete.cases(exprs(nml)),]
+> dim(Expresados)
 \end{Sinput}
 \begin{Soutput}
-[1] 5333    3
+[1] 22277     8
 \end{Soutput}
+\end{Schunk}
+\item{Aplicando la prueba T múltiple}
+\begin{Schunk}
 \begin{Sinput}
-> names(rtt)
-\end{Sinput}
-\begin{Soutput}
-[1] "statistic" "dm"        "p.value"  
-\end{Soutput}
-\begin{Sinput}
-> ###################################
-> selectedRows=(rowSums(Am)>10)
-> Am2=Am[selectedRows,]
-> dim(Am)
-\end{Sinput}
-\begin{Soutput}
-[1]  228 5333
-\end{Soutput}
-\begin{Sinput}
-> dim(Am2)
-\end{Sinput}
-\begin{Soutput}
-[1]  207 5333
-\end{Soutput}
-\begin{Sinput}
-> dim(rtt)
-\end{Sinput}
-\begin{Soutput}
-[1] 5333    3
-\end{Soutput}
-\begin{Sinput}
-> ###################################
-> z=0
-> for(i in 1:dim(Am2)[1]){
-+ z[i]=sum(rttStat[Am2[i,]==1])/sqrt(sum(Am2[i,]))
-+ }
-> length(z)
-\end{Sinput}
-\begin{Soutput}
-[1] 207
-\end{Soutput}
-\begin{Sinput}
-> #########################################
-> resGSEA <- cbind(rownames(Am2),z)
-> resGSEAdown <- resGSEA[resGSEA[,2]<(-1.96),]
-> resGSEAup <- resGSEA[resGSEA[,2]>1.96,]
+> PruebaT<-rowttests(Expresados[,c(1:8)],factor(c(0,0,0,0,1,1,1,1)))$p.value<0.05
 \end{Sinput}
 \end{Schunk}
-
+\item{Resaltándo los genes diferencialmente expresados}
+\begin{Schunk}
+\begin{Sinput}
+> smoothScatter(rowMeans(A), rowMeans(M), main=" ", xlab="A", ylab="M")
+> title(main='MA PLOT',font=2)
+> abline(h=0, col="red")
+> points(rowMeans(A[PruebaT,]),rowMeans(M[PruebaT,]),col="red",cex=0.1)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{JuanHenao_Taller3-011}
+\end{itemize}
 \end{document}
