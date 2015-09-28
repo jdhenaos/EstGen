@@ -33,12 +33,12 @@ dim(eset)
 <<>>=
 nml <- justvsn(eset)
 @
-\item{Grafica de datos No normalizados}
+\item{Gráfica de datos No normalizados}
 <<fig=TRUE>>=
 meanSdPlot(eset)
 title(main='Datos No normalizados',font=2)
 @
-\item{Grafica de datos normalizados}
+\item{Gráfica de datos normalizados}
 <<fig=TRUE>>=
 meanSdPlot(nml)
 title(main='Datos normalizados',font=2)
@@ -57,7 +57,7 @@ A=(exprs(nml)[,ismp]+exprs(nml)[,iref])/2
 dim(M)
 dim(A)
 @
-\item{Generando la grafica}
+\item{Generando la gráfica}
 <<fig=TRUE>>=
 smoothScatter(rowMeans(A), rowMeans(M), main=" ", xlab="A", ylab="M")
 title(main='MA PLOT',font=2)
@@ -81,7 +81,7 @@ dim(Expresados)
 <<>>=
 PruebaT<-rowttests(Expresados[,c(1:8)],factor(c(0,0,0,0,1,1,1,1)))$p.value<0.05
 @
-\item{Resaltándo los genes diferencialmente expresados}
+\item{Resaltando los genes diferencialmente expresados}
 <<fig=TRUE>>=
 smoothScatter(rowMeans(A), rowMeans(M), main=" ", xlab="A", ylab="M")
 title(main='MA PLOT',font=2)

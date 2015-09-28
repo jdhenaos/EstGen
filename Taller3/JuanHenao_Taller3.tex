@@ -70,7 +70,7 @@ Features  Samples
 > nml <- justvsn(eset)
 \end{Sinput}
 \end{Schunk}
-\item{Grafica de datos No normalizados}
+\item{Gráfica de datos No normalizados}
 \begin{Schunk}
 \begin{Sinput}
 > meanSdPlot(eset)
@@ -78,7 +78,7 @@ Features  Samples
 \end{Sinput}
 \end{Schunk}
 \includegraphics{JuanHenao_Taller3-004}
-\item{Grafica de datos normalizados}
+\item{Gráfica de datos normalizados}
 \begin{Schunk}
 \begin{Sinput}
 > meanSdPlot(nml)
@@ -110,7 +110,7 @@ Features  Samples
 [1] 22277     4
 \end{Soutput}
 \end{Schunk}
-\item{Generando la grafica}
+\item{Generando la gráfica}
 \begin{Schunk}
 \begin{Sinput}
 > smoothScatter(rowMeans(A), rowMeans(M), main=" ", xlab="A", ylab="M")
@@ -146,7 +146,7 @@ Features  Samples
 > PruebaT<-rowttests(Expresados[,c(1:8)],factor(c(0,0,0,0,1,1,1,1)))$p.value<0.05
 \end{Sinput}
 \end{Schunk}
-\item{Resaltándo los genes diferencialmente expresados}
+\item{Resaltando los genes diferencialmente expresados}
 \begin{Schunk}
 \begin{Sinput}
 > smoothScatter(rowMeans(A), rowMeans(M), main=" ", xlab="A", ylab="M")
