@@ -15,60 +15,55 @@
 \section*{Sobre unos datos del GEO (una sola medición en el tiempo) que comparen dos condiciones, identifique los genes diferencialmente expresados usando acde:
 }
 
+\begin{itemize}
+\item{Cargando las librerias}
 <<>>=
-
 library(acde)
 library("DESeq")
-#########################
+@
+\item{Cargando los datos}
+<<>>=
 data <- read.table("GSE58972_RELA_6h_processed_data.txt", h=T)
 dim(data)
 head(data)
 @
+\item{Gráficando los datos cargados}
 <<fig=TRUE>>=
 boxplot(data[, 3:8], main="Boxplot Mus musculus", col="lightgreen", cex.names=0.2, las=2)
 @
+\item{Creando el CountDataSet}
 <<>>=
 rownames(data) <- data$gene
 countsTable <- data[,3:8]
 head(countsTable)
 conds <- factor( c( "WT", "WT", "WT", "treated","treated","treated"))
 cds <- newCountDataSet( countsTable, conds )
-####################################################
+@
+\item{Estimando el tamaño de los datos}
+<<>>=
 cds <- estimateSizeFactors( cds )
 sizeFactors(cds)
-head(counts(cds,normalized=TRUE))
-cds <- estimateDispersions( cds )
-#####################################################
-plotDispEsts <- function( cds ){
-  
-  plot(rowMeans( counts( cds, normalized=TRUE ) ), fitInfo(cds)
-       
-       $perGeneDispEsts, pch = '.', log="xy", ylab="dispersion",
-       
-       xlab="mean of normalized counts")
-  
-  xg = 10^seq( -.5, 5, length.out=300 )
-  
-  lines( xg, fitInfo(cds)$dispFun( xg ), col="red" )
-  
-}
 @
-<<fig=TRUE>>=
-
-plotDispEsts(cds)
-@
+\item{Normalización}
 <<>>=
+head(counts(cds,normalized=TRUE))
+@
+\item{Estimando las diferencias}
+<<>>=
+cds <- estimateDispersions( cds )
 res = nbinomTest(cds,"WT","treated")
 head(res)
 @
+\item{Gráficando los resultados obtenidos}
 <<fig=TRUE>>=
 plotMA(res)
-hist(res$pval, breaks=100, col="skyblue", border="slateblue", main="")
 @
+\item{Resultados finales}
 <<>>=
 resSig = res[ res$padj < 0.1, ]
-head(resSig)
+na.omit(dim(resSig))
+na.omit(head(resSig))
 @
-
+\end{itemize}
 \end{document}
 

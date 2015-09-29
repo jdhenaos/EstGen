@@ -16,11 +16,17 @@
 \section*{Sobre unos datos del GEO (una sola medición en el tiempo) que comparen dos condiciones, identifique los genes diferencialmente expresados usando acde:
 }
 
+\begin{itemize}
+\item{Cargando las librerias}
 \begin{Schunk}
 \begin{Sinput}
 > library(acde)
 > library("DESeq")
-> #########################
+\end{Sinput}
+\end{Schunk}
+\item{Cargando los datos}
+\begin{Schunk}
+\begin{Sinput}
 > data <- read.table("GSE58972_RELA_6h_processed_data.txt", h=T)
 > dim(data)
 \end{Sinput}
@@ -47,12 +53,14 @@
 6      1968
 \end{Soutput}
 \end{Schunk}
+\item{Gráficando los datos cargados}
 \begin{Schunk}
 \begin{Sinput}
 > boxplot(data[, 3:8], main="Boxplot Mus musculus", col="lightgreen", cex.names=0.2, las=2)
 \end{Sinput}
 \end{Schunk}
-\includegraphics{JuanHenao_Taller3A-002}
+\includegraphics{JuanHenao_Taller3A-003}
+\item{Creando el CountDataSet}
 \begin{Schunk}
 \begin{Sinput}
 > rownames(data) <- data$gene
@@ -71,7 +79,11 @@
 \begin{Sinput}
 > conds <- factor( c( "WT", "WT", "WT", "treated","treated","treated"))
 > cds <- newCountDataSet( countsTable, conds )
-> ####################################################
+\end{Sinput}
+\end{Schunk}
+\item{Estimando el tamaño de los datos}
+\begin{Schunk}
+\begin{Sinput}
 > cds <- estimateSizeFactors( cds )
 > sizeFactors(cds)
 \end{Sinput}
@@ -79,6 +91,9 @@
   WT_6h_1   WT_6h_2   WT_6h_3 RELA_6h_1 RELA_6h_2 RELA_6h_3 
 0.9731925 0.9971984 0.9465783 1.0701892 1.0843975 0.9475568 
 \end{Soutput}
+\end{Schunk}
+\item{Normalización}
+\begin{Schunk}
 \begin{Sinput}
 > head(counts(cds,normalized=TRUE))
 \end{Sinput}
@@ -98,32 +113,11 @@
 0610007P08Rik 1427.88275
 0610007P14Rik 2076.92037
 \end{Soutput}
+\end{Schunk}
+\item{Estimando las diferencias}
+\begin{Schunk}
 \begin{Sinput}
 > cds <- estimateDispersions( cds )
-> #####################################################
-> plotDispEsts <- function( cds ){
-+   
-+   plot(rowMeans( counts( cds, normalized=TRUE ) ), fitInfo(cds)
-+        
-+        $perGeneDispEsts, pch = '.', log="xy", ylab="dispersion",
-+        
-+        xlab="mean of normalized counts")
-+   
-+   xg = 10^seq( -.5, 5, length.out=300 )
-+   
-+   lines( xg, fitInfo(cds)$dispFun( xg ), col="red" )
-+   
-+ }
-\end{Sinput}
-\end{Schunk}
-\begin{Schunk}
-\begin{Sinput}
-> plotDispEsts(cds)
-\end{Sinput}
-\end{Schunk}
-\includegraphics{JuanHenao_Taller3A-004}
-\begin{Schunk}
-\begin{Sinput}
 > res = nbinomTest(cds,"WT","treated")
 > head(res)
 \end{Sinput}
@@ -144,35 +138,34 @@
 6 0.4241029562 0.939431937
 \end{Soutput}
 \end{Schunk}
+\item{Gráficando los resultados obtenidos}
 \begin{Schunk}
 \begin{Sinput}
 > plotMA(res)
-> hist(res$pval, breaks=100, col="skyblue", border="slateblue", main="")
 \end{Sinput}
 \end{Schunk}
-\includegraphics{JuanHenao_Taller3A-006}
+\includegraphics{JuanHenao_Taller3A-008}
+\item{Resultados finales}
 \begin{Schunk}
 \begin{Sinput}
 > resSig = res[ res$padj < 0.1, ]
-> head(resSig)
+> na.omit(dim(resSig))
 \end{Sinput}
 \begin{Soutput}
-                id  baseMean baseMeanA baseMeanB foldChange log2FoldChange
-2    0610007C21Rik  537.9022  575.0198  500.7847   0.870900     -0.1994210
-3    0610007L01Rik 2364.7377 2225.3449 2504.1304   1.125277      0.1702807
-NA            <NA>        NA        NA        NA         NA             NA
-NA.1          <NA>        NA        NA        NA         NA             NA
-NA.2          <NA>        NA        NA        NA         NA             NA
-NA.3          <NA>        NA        NA        NA         NA             NA
-             pval        padj
-2    0.0067509416 0.078064572
-3    0.0001904397 0.004043898
-NA             NA          NA
-NA.1           NA          NA
-NA.2           NA          NA
-NA.3           NA          NA
+[1] 8364    8
+\end{Soutput}
+\begin{Sinput}
+> na.omit(head(resSig))
+\end{Sinput}
+\begin{Soutput}
+             id  baseMean baseMeanA baseMeanB foldChange log2FoldChange
+2 0610007C21Rik  537.9022  575.0198  500.7847   0.870900     -0.1994210
+3 0610007L01Rik 2364.7377 2225.3449 2504.1304   1.125277      0.1702807
+          pval        padj
+2 0.0067509416 0.078064572
+3 0.0001904397 0.004043898
 \end{Soutput}
 \end{Schunk}
-
+\end{itemize}
 \end{document}
 
