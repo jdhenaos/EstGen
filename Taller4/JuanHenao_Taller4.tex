@@ -15,14 +15,14 @@
 
 \section{Test Exacto de Fisher: }
 
-La prueba de $X^2$ era la prueba utilizada para conocer la relacion o la no relacion entre datos de tipo cualitativo, pero esta prueba esta sujeta a varios supuestos par su correcta implementacion. Uno de ellos es si las frecuencias esperadas de los valores en una tabla de contingensia son lo suficientemente grandes y ademas si los datos mestran algun tipo de dependencia, entonces el metodo $X^2$ no sera el mas apropiado.\\
+La prueba de $X^2$ era la prueba utilizada para conocer la relación o la no relación entre datos de tipo cualitativo, pero esta prueba esta sujeta a varios supuestos par su correcta implementación. Uno de ellos es si las frecuencias esperadas de los valores en una tabla de contingencia son lo suficientemente grandes y ademas si los datos muestran algún tipo de dependencia, entonces el método $X^2$ no sera el mas apropiado.\\
 
-Como una alternativa a esta prueba a aparecido el Test Exacto de Fisher, el cual permite analizar si dos variables dicotomicas, en una muestra demasiado pequeña, estan asociadas, teniendo en cuenta aemas que no se cumplan los supuestos necesarios para aplicar la prueba de $X^2$, esto incluye que, al menos en el 80\% de las celdas de la tabla de contingencia, los valores esperados sean igual o mayores que 5.\\
+Como una alternativa a esta prueba a aparecido el Test Exacto de Fisher, el cual permite analizar si dos variables dicotómicas, en una muestra demasiado pequeña, están asociadas, teniendo en cuenta ademas que no se cumplan los supuestos necesarios para aplicar la prueba de $X^2$, esto incluye que, al menos en el 80\% de las celdas de la tabla de contingencia, los valores esperados sean igual o mayores que 5.\\
 
-Si las variables que se estan considerando dentro de la tabla e contingencia son dicotomicas, entonces se puede obtener una tabla 2x2, entonces el test exacto de Fisher evaluara las probabilidades para cada tabla 2x2 que se puedan crear teniendo en cuenta el total marginal de la tabla observada, esto si se parte del supuesto de la independencia de las dos variables que se estan analizando.\\
+Si las variables que se están considerando dentro de la tabla e contingencia son dicotómicas, entonces se puede obtener una tabla 2x2, entonces el test exacto de Fisher evaluara las probabilidades para cada tabla 2x2 que se puedan crear teniendo en cuenta el total marginal de la tabla observada, esto si se parte del supuesto de la independencia de las dos variables que se están analizando.\\
 
 \begin{center}
-Tabla de comparacion para variables dicotomicas.
+Tabla de comparación para variables dicotómicas.
 \begin{tabular}{c|ccc|}
 \cline{2-4}
  &  & Característica 1 &  \\ 
@@ -38,33 +38,108 @@ Tabla de comparacion para variables dicotomicas.
 \end{tabular}
 \end{center}
 
-La probabilidad de observar las frecuencias a, b, c y d, como se menciono anteriormente, se obtenien bajo el supuesto de independencia y son dados por la distribucion hipergeometrica:\\
+La probabilidad de observar las frecuencias a, b, c y d, como se menciono anteriormente, se obtienen bajo el supuesto de independencia y son dados por la distribución hipergeométrica:\\
 
 \begin{equation}
 p=\frac{(a+b)!(c+d)!(a+c)!(b+d)!}{n!a!b!c!d!}
 \end{equation}
 \\
-Esta ecuacion represent todas las posibles combinaciones filasxcolumnas de la tabla 2x2 y dicha probanilidad debe ser calculada para todas las tablas de 2x2 estimadas que se puedan originar con el mismo total marginal (n) que la tabla de 2x2 observada. Una vez calculadas ls probabilidas, estas seran usadas para calcular el p-value de el test exacto de Fisher el cual indcara la probabilidad de obtener diferencias de los grupos iguales o mayores al observado, dado que el p-value sea pequeño (p<0.05), se asumira entonces que las variables no son independientes.\\
+Esta ecuación representa todas las posibles combinaciones filasxcolumnas de la tabla 2x2 y dicha probabilidad debe ser calculada para todas las tablas de 2x2 estimadas que se puedan originar con el mismo total marginal (n) que la tabla de 2x2 observada. Una vez calculadas las probabilidades, estas serán usadas para calcular el p-value de el test exacto de Fisher el cual indicara la probabilidad de obtener diferencias de los grupos iguales o mayores al observado, dado que el p-value sea pequeño (p<0.05), se asumirá entonces que las variables no son independientes.\\
 
-Para estimar el p-value se pueden seguir dos metodos, el primero de ellos es sumando las probabilidades de las tablas estimadas cuyo valor de probabilidad asociado (ecuacion 1), sea menor o igual al de la tabla observada, la segunda posibilidad es sumar todas las probabilidades que apoyen la hipotesis alternitava (no independencia) tanto como lo hagan los datos reales.
+Para estimar el p-value se pueden seguir dos métodos, el primero de ellos es sumando las probabilidades de las tablas estimadas cuyo valor de probabilidad asociado (ecuación 1), sea menor o igual al de la tabla observada, la segunda posibilidad es sumar todas las probabilidades que apoyen la hipótesis alternativa (no independencia) tanto como lo hagan los datos reales.
 
 \section{Test exacto de fisher usando GWASTools}
-
+Para este ejercicio se utilizaron 15 SNPs relacionados a la enfermedad de esclerosis múltiple obtenidos a partir de estudios de GWAS consultados en la base de datos GWAS Central, los identificadores de los estudios realizados son: HGVRS1735, HGVRS3140 y HGVRS643.
+  \begin{itemize}
+\item Cargando la libreria GWASTools.
 \begin{Schunk}
 \begin{Sinput}
 > library("GWASTools")
+\end{Sinput}
+\end{Schunk}
+\item Cargando los datos de SNPs.
+\begin{Schunk}
+\begin{Sinput}
 > SNPs<-read.table("SNPsTaller4.txt", header = T)
+> SNPs
+\end{Sinput}
+\begin{Soutput}
+         FENO C.T G.T A.G A.C
+1   rs7090512   1   0   0   0
+2    rs669607   0   1   0   0
+3   rs1738074   0   0   1   0
+4   rs1077667   0   0   1   0
+5  rs11154801   0   0   0   1
+6  rs17066096   0   0   1   0
+7   rs4271113   0   0   1   0
+8   rs2920001   1   0   0   0
+9  rs11026091   0   0   1   0
+10  rs5978649   0   0   1   0
+11   rs533259   1   0   0   0
+12  rs9568281   0   0   1   0
+13  rs2523393   1   0   0   0
+14  rs1800693   0   0   1   0
+15  rs2300747   0   0   1   0
+\end{Soutput}
+\end{Schunk}
+\item Creando el tipo de archivo \textit{MatrixGenotypeReader}.
+\begin{Schunk}
+\begin{Sinput}
 > genotype<-as.matrix(SNPs[2:16,2:5])
 > SNPID <- 1:15
 > chrom<-as.integer(c(10,3,6,19,6,6,23,18,11,23,1,13,6,12,1))
-> pos<-as.integer(c(6110829,28071444,159465977,6668972,135739355,137452908,34892503,28789725,3259809,13615118,182549019,50185204,29705659,6440009,117104215))
+> pos<-as.integer(c(6110829,28071444,159465977,6668972,135739355,
++                   137452908,34892503,28789725,3259809,13615118,
++                   182549019,50185204,29705659,6440009,117104215))
 > IDscan<-1:4
-> InputData<-MatrixGenotypeReader(genotype=genotype,snpID=SNPID,chromosome=chrom,position=pos,scanID=IDscan)
+> InputData<-MatrixGenotypeReader(genotype=genotype,snpID=SNPID,
++                                 chromosome=chrom,position=pos,scanID=IDscan)
+> InputData
+\end{Sinput}
+\begin{Soutput}
+An object of class MatrixGenotypeReader 
+with 4 scans and 15 snps
+\end{Soutput}
+\end{Schunk}
+\item Creando el tipo de dato \textit{ScanAnnotationDataFrame}.
+\begin{Schunk}
+\begin{Sinput}
 > sex <- c('F','F','F','F')
 > scanID <- as.numeric(IDscan)
 > frame <- data.frame(scanID,sex)
 > scan <- ScanAnnotationDataFrame(frame)
+> scan
+\end{Sinput}
+\begin{Soutput}
+An object of class 'ScanAnnotationDataFrame'
+  scans: 1 2 3 4
+  varLabels: scanID sex
+  varMetadata: labelDescription
+\end{Soutput}
+\end{Schunk}
+\item Creando el tipo de dato \textit{GenotypeData}.
+\begin{Schunk}
+\begin{Sinput}
 > InputData2<-GenotypeData(InputData, snpAnnot = NULL, scanAnnot = scan)
+> InputData2
+\end{Sinput}
+\begin{Soutput}
+An object of class GenotypeData 
+ | data:
+An object of class MatrixGenotypeReader 
+with 4 scans and 15 snps
+ | SNP Annotation:
+NULL
+ | Scan Annotation:
+An object of class 'ScanAnnotationDataFrame'
+  scans: 1 2 3 4
+  varLabels: scanID sex
+  varMetadata: labelDescription
+\end{Soutput}
+\end{Schunk}
+\item Test exacto de fisher.
+\begin{Schunk}
+\begin{Sinput}
 > fisher <- batchFisherTest(InputData2, batchVar = "scanID",
 +                           chrom.include=23, sex.include = "F",return.by.snp=TRUE)
 > fisher
@@ -98,9 +173,6 @@ $min.exp.freq
 7  0.25 0.25 0.25 0.25
 10 0.25 0.25 0.25 0.25
 \end{Soutput}
-\begin{Sinput}
-> 
-\end{Sinput}
 \end{Schunk}
-
+\end{itemize}
 \end{document}
